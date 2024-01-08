@@ -1,14 +1,17 @@
-use crate::api::api_errors::ApiError;
+use std::env;
+
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use lazy_static::lazy_static;
 use r2d2;
-use std::env;
+
+use crate::api::api_errors::ApiError;
 
 type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 pub type DbConnection = r2d2::PooledConnection<ConnectionManager<PgConnection>>;
 
-// embed_migrations!();
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 lazy_static! {
     static ref POOL: Pool = {
@@ -21,8 +24,8 @@ lazy_static! {
 pub fn init() {
     info!("Initializing DB");
     lazy_static::initialize(&POOL);
-    // let conn = connection().expect("Failed to get db connection");
-    // embedded_migrations::run(&conn).unwrap();
+    let mut conn = connection().expect("Failed to get db connection");
+    conn.run_pending_migrations(MIGRATIONS).unwrap();
 }
 
 pub fn connection() -> Result<DbConnection, ApiError> {

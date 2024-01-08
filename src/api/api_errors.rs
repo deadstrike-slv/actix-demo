@@ -1,9 +1,10 @@
-use actix_web::http::StatusCode;
+use std::fmt;
+
 use actix_web::{HttpResponse, ResponseError};
+use actix_web::http::StatusCode;
 use diesel::result::Error as DieselError;
 use serde::Deserialize;
 use serde_json::json;
-use std::fmt;
 
 #[derive(Debug, Deserialize)]
 pub struct ApiError {

@@ -1,5 +1,6 @@
-use crate::api::task;
 use actix_web::web::ServiceConfig;
+
+use crate::api::task;
 
 pub fn init_routes(cfg: &mut ServiceConfig) {
     cfg.service(task::find_all);

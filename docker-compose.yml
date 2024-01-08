@@ -5,22 +5,27 @@ services:
     restart: on-failure
     depends_on:
       - pgdb
+    env_file:
+      - .env.docker
+      - .env.override
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@posgres/postgres"
+      DATABASE_URL: "postgres://postgres:postgres@pgdb:5432/postgres"
     build: .
-    command: cargo run
     volumes:
       - .:/usr/src/actix-demo
     ports:
       - 8000:8000
     links:
       - pgdb
+    command: cargo run
   pgdb:
     image: postgres
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
     container_name: pgdb
     volumes:
       - pgdbdata:/var/lib/postgresql/data/
